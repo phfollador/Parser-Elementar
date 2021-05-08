@@ -1,0 +1,69 @@
+/*
+PARSER DESENVOLVIDO PARA A DISCIPLINA DE COMPILADORES PELOS ALUNOS: HERICK LIMA E PERO HENRIQUE RIZZI
+*/
+
+options {
+    LOOKAHEAD = 2;
+}
+
+PARSER_BEGIN(Gramatica)
+public class Gramatica {
+    public static void main(String[] args) throws ParseException {
+        Gramatica gramatica = new Gramatica(System.in);
+        try{
+            gramatica.start();
+            System.out.println("Compilando.....");
+        } catch (ParseException e) {
+            System.out.println("Erro.");
+            e.printStackTrace();
+        }
+    }
+}
+PARSER_END(Gramatica)
+
+SKIP:{
+  " "
+  | "\t"
+  | "\n"
+  | "\r"
+}
+
+TOKEN: {
+  <ADD:("+")>   { System.out.println("Operador/Sinal: "+image); }
+  | <SUB:("-")> { System.out.println("Operador/Sinal: "+image); }
+  | <MUL:("*")> { System.out.println("Operador/Sinal: "+image); }
+  | <DIV:("/")> { System.out.println("Operador/Sinal: "+image); }
+  | <EXP:("^")> { System.out.println("Operador/Sinal: "+image); }
+  | <LBR:("(")> { System.out.println("Parentese: "+image); }
+  | <RBR:(")")> { System.out.println("Parentese: "+image); }
+  | <DOT:(".")> { System.out.println("Ponto: "+image); }
+}
+
+TOKEN: {
+    <NUMBER: (<DIGIT>)+ ( <DOT> (<DIGIT>)+ )?> { System.out.println("Numero: "+image); }
+    | <DIGIT: ["0"-"9"]>
+}
+
+TOKEN : {
+    <VAR: ["X", "Y"]> { System.out.println("Variavel: "+image); }
+}
+
+void start() : {}{
+    exp() <EOF>
+}
+
+void exp() : {}{
+    term() ( <ADD> exp() | <SUB> exp() )*
+}
+
+void term() : {}{
+    unary() ( <MUL> term() | <DIV> term() | <EXP> term() )*
+}
+
+void unary(): {}{
+    "-" element() | element()
+}
+
+void element(): {}{
+    <NUMBER> | <VAR> | <LBR> exp() <RBR>
+}
